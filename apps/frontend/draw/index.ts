@@ -20,6 +20,7 @@ export async function initDraw(canvas:HTMLCanvasElement, roomId:string,socket:We
     
     const ctx=canvas.getContext("2d");
     let existingShapes:Shape[]=await getExistingShapes(roomId);
+    
     if(!ctx){
         return;
     }
@@ -65,8 +66,10 @@ export async function initDraw(canvas:HTMLCanvasElement, roomId:string,socket:We
 
            socket.send(JSON.stringify({
             type:"chat",
+            roomId,
             message:JSON.stringify(shape),
            }))
+           
         })
 
         canvas.addEventListener("mousemove",(e)=>{
@@ -104,8 +107,9 @@ function clearCanvas(existingShapes:Shape[],canvas:HTMLCanvasElement,ctx:CanvasR
 }
 
 async function getExistingShapes(roomId:string){
-    const res=await axios.get(`${HTTP_BACKEND}/chats/roomId`);
+    const res=await axios.get(`${HTTP_BACKEND}/chats/${roomId}`);
     const messages=res.data.messages;
+    console.log(messages);
 
     const shapes=messages.map((x:{message:string})=>{
         const messageData=JSON.parse(x.message);
